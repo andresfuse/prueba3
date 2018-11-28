@@ -28,6 +28,12 @@ var svg = d3.select("svg"),
     
 var formatValue = d3.format(",d");
 
+data = d3.csv("https://raw.githubusercontent.com/andresfuse/datos/master/base_l1ux.csv", ({SALID1,Country,L1Name,number_of_urban_patches,patch_density,area_weigthed_mean_shape_index,area_weigthed_mean_nearest_neighbor,effective_mesh_size,area_weighted_mean_patch_size,Circuity_average,intersection_density,street_density,street_length_average,streets_per_node_average,urb_perfil,stt_perfil,area,population_density}) => ({salid1: SALID1, country: Country, name: L1Name, nup: +number_of_urban_patches,pd:+patch_density,msi:+area_weigthed_mean_shape_index,mnn:+ area_weigthed_mean_nearest_neighbor,ems:+effective_mesh_size,mps:+area_weighted_mean_patch_size,ca:+Circuity_average,id:+intersection_density,st:+street_density,sla:+street_length_average,sna:+streets_per_node_average,urb:urb_perfil,stt:stt_perfil,area:+area,popdens:+population_density}))
+
+sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
+    .key(function(d) { return d.urb;})
+    .entries(data)	
+	
 var x = d3.scaleLog()
     .rangeRound([0, width]);
     
@@ -39,11 +45,6 @@ var y = d3.scaleBand()
 var g = svg.append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
   
-data = d3.csv("https://raw.githubusercontent.com/andresfuse/datos/master/base_l1ux.csv", ({SALID1,Country,L1Name,number_of_urban_patches,patch_density,area_weigthed_mean_shape_index,area_weigthed_mean_nearest_neighbor,effective_mesh_size,area_weighted_mean_patch_size,Circuity_average,intersection_density,street_density,street_length_average,streets_per_node_average,urb_perfil,stt_perfil,area,population_density}) => ({salid1: SALID1, country: Country, name: L1Name, nup: +number_of_urban_patches,pd:+patch_density,msi:+area_weigthed_mean_shape_index,mnn:+ area_weigthed_mean_nearest_neighbor,ems:+effective_mesh_size,mps:+area_weighted_mean_patch_size,ca:+Circuity_average,id:+intersection_density,st:+street_density,sla:+street_length_average,sna:+streets_per_node_average,urb:urb_perfil,stt:stt_perfil,area:+area,popdens:+population_density}))
-
-sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
-    .key(function(d) { return d.urb;})
-    .entries(data)
 
   x.domain(d3.extent(data, function(d) { return d.area; }));
   var simulation = d3.forceSimulation(data)
